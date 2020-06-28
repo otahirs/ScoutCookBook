@@ -1,0 +1,22 @@
+SEZNAM RECEPTŮ
+	vyhledat, vytvořit, upravit, smazat
+
+VYTVOŘIT/UPRAVIT RECEPT
+	název
+	popis postupu
+	pro kolik osob je určen
+	polívka, svačina, jídlo
+	INGREDIENCE
+		vyhledání existující
+		vytvoření nové
+		hmotnost, kusy nebo litry
+		typ (maso, zelenina,..)
+		
+JÍDELNÍČEK
+	pro jednotlivé dny vyhledat recept a zadat počet lidí
+	vygenerovat společný nákupní seznam 
+		(seskupen dle kategorií, pozn. k jakému jídlu)
+	recepty pdf k tisku
+	
+		
+

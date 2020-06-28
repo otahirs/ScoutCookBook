@@ -1,0 +1,235 @@
+@page "/RecipeEditor"
+@page "/RecipeEditor/{recipeid}"
+
+@using SharedLibrary.Enums
+@using DataAccessLibrary
+@using DataAccessLibrary.Models
+@using ScoutCookBook.Models
+@using System
+
+@inject IToastService toastService
+@inject IRecipeData _db
+
+<h1>Recipes Page</h1>
+
+@if (Recipe is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    @if(IsNew) 
+    {
+        <h4>Create recipe</h4>
+    } 
+    else
+    {
+        <h4>Edit recipe</h4>
+    }
+    <EditForm Model="@Recipe" OnValidSubmit="@InsertRecipe">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <label>
+            Název jídla:
+            <InputText  @bind-Value="@Recipe.Name" />
+        </label><br>
+        <label>
+            Pro kolik osob je recept:
+            <InputText @bind-Value="@Recipe.NumberOfPortions" />
+        </label><br>
+        
+        <label>
+            Typ jídla:
+            <InputSelect @bind-Value="@Recipe.Type"><br>
+                @foreach (var type in Enum.GetValues(typeof(DishType)))
+                { 
+                    <option value="@type">@type.ToString()</option>
+                }
+            </InputSelect>
+        </label>
+        <hr>
+        <label>
+            Ingredience:
+            <br>
+            @foreach (var ingredient in Recipe.Ingredients)
+            { 
+                <select @onchange=@( e => IngredientUpdated(e, ingredient))>
+                    <option hidden disabled>-- Select --</option>
+                    @foreach (var ing in AllIngredients)
+                    {
+                        <option value="@ing.Id.ToString()" selected="@(ingredient.Id == ing.Id)">@ing.Name</option>
+                    }
+                </select> 
+                <InputText @bind-Value="@ingredient.Amount" />
+                <span>@ingredient.Unit</span>
+                <br>
+            }
+        </label>
+        <br>
+        
+        
+        @if(CreateIngredientIsActive)
+        {
+            <br>
+            <EditForm Context="InsertNewIngredient" Model="@newIngredient" OnValidSubmit="@SaveIngredient">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <label>
+                Name:
+                <InputText @bind-Value="@newIngredient.Name" />
+            </label><br>
+            <label>
+                Category:
+                <InputSelect @bind-Value=newIngredient.Category><br>
+                    @foreach (var category in Enum.GetValues(typeof(IngredientCategory)))
+                    { 
+                        <option value="@category">@category.ToString()</option>
+                    }
+                </InputSelect>
+            </label><br>
+            <label>
+                Unit:
+                <InputSelect @bind-Value=newIngredient.Unit><br>
+                    @foreach (var unit in Enum.GetValues(typeof(IngredientUnit)))
+                    { 
+                        <option value="@unit">@unit.ToString()</option>
+                    }
+                </InputSelect>
+            </label><br>
+
+            <button type="submit" class="btn-primary">Save</button>
+            <button type="button" class="btn-primary" @onclick="@(() => CreateIngredientIsActive = false )">Cancel</button>
+            </EditForm>
+            <br>
+        }
+        else 
+        {
+            <button type="button" class="btn-primary" @onclick="AddIngredient">Add</button>
+            <button type="button" class="btn-secondary" @onclick="@(() => CreateIngredientIsActive = true )">Create new</button>
+        }
+        <hr>
+        <label>
+            Popis přípravy:
+            <InputTextArea @bind-Value="Recipe.Recipe" />
+        </label>
+        <hr>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </EditForm>
+
+}
+
+@code {
+   
+    [Parameter]
+    public string RecipeId { get; set; }
+    private bool IsNew = false;
+
+    private bool CreateIngredientIsActive = false;
+    private DisplayRecipeModel Recipe;
+    private List<IngredientModel> AllIngredients;
+
+    private DisplayIngredientModel newIngredient = new DisplayIngredientModel();
+    protected override async Task OnInitializedAsync()
+    {
+
+        toastService.ShowInfo($"Load");
+        if (string.IsNullOrEmpty(RecipeId)) 
+        {
+            IsNew = true;
+            Recipe = new DisplayRecipeModel();
+        }
+        else 
+        {
+            try {
+                var recipesFromDb = (await _db.GetRecipes()).FirstOrDefault(r => r.Id.ToString() == RecipeId);
+                if(recipesFromDb == null) return;
+                Recipe = new DisplayRecipeModel 
+                {
+                    Id = RecipeId,
+                    Name = recipesFromDb.Name,
+                    Type = Enum.Parse<DishType>(recipesFromDb.Type),
+                    NumberOfPortions = recipesFromDb.NumberOfPortions.ToString(),
+                    Recipe = recipesFromDb.Recipe
+                };
+                foreach(var i in await _db.GetIngredientsInRecipe(int.Parse(Recipe.Id)))
+                {
+                    var ingredient = new DisplayIngredientModel 
+                    {
+                        Id = i.Id,
+                        Name = i.Name,
+                        Category = Enum.Parse<IngredientCategory>(i.Category),
+                        Unit = Enum.Parse<IngredientUnit>(i.Unit),
+                        Amount = i.Amount.ToString()
+                    };
+                    Recipe.Ingredients.Add(ingredient);
+                };
+            }
+            catch {
+                toastService.ShowError("Something went wrong");
+            }
+            
+        }
+        AllIngredients = await _db.GetIngredients();
+    }
+
+    private async Task InsertRecipe()
+    {
+        RecipeModel p = new RecipeModel
+        {
+            Name = Recipe.Name,
+            Recipe = Recipe.Recipe,
+            NumberOfPortions = int.Parse(Recipe.NumberOfPortions),
+            Type = Enum.GetName(typeof(DishType), Recipe.Type)
+        };
+
+        var recipeId = await _db.InsertRecipe(p);        
+
+        Recipe = new DisplayRecipeModel();
+    }
+
+    private void AddIngredient() {
+        Recipe.Ingredients.Add(new DisplayIngredientModel());
+    }
+
+    // create ingredient 
+
+    private async Task SaveIngredient()
+    {
+        try {
+            IngredientModel ingredient = new IngredientModel
+            {
+                Name = newIngredient.Name,
+                Category = Enum.GetName(typeof(IngredientCategory), newIngredient.Category),
+                Unit = Enum.GetName(typeof(IngredientUnit), newIngredient.Unit)
+            };
+
+            await _db.InsertIngredient(ingredient);
+            toastService.ShowSuccess($"{ingredient.Name} Added");
+
+            AllIngredients = await _db.GetIngredients();
+            var addedIngredient = AllIngredients.First(i => i.Name == ingredient.Name && i.Unit == ingredient.Unit);
+
+            Recipe.Ingredients.Add(new DisplayIngredientModel() 
+            {
+                Id = addedIngredient.Id, 
+            });
+            newIngredient = new DisplayIngredientModel(); 
+            CreateIngredientIsActive = false;   
+        }
+        catch {
+            toastService.ShowError("Something went wrong");
+        }
+    }
+
+    private void IngredientUpdated(ChangeEventArgs e, DisplayIngredientModel ingredient)
+    {
+        var selected = AllIngredients.First(i => i.Id.ToString() == (string)e.Value);
+        ingredient.Id = selected.Id;
+        ingredient.Name = selected.Name;
+        ingredient.Unit = Enum.Parse<IngredientUnit>(selected.Unit);
+
+    }
+    
+}

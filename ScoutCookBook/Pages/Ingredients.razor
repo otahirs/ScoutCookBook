@@ -1,0 +1,150 @@
+@page "/Ingredients"
+
+@using SharedLibrary.Enums
+@using DataAccessLibrary
+@using DataAccessLibrary.Models
+@using ScoutCookBook.Models
+@using System
+@using System.Globalization
+
+@inject IToastService toastService
+@inject IRecipeData _db
+
+<h1>Ingredients</h1>
+<hr>
+@if(EditMode)
+{
+    <h3>Edit ingredient</h3>
+}
+else 
+{
+    <h3>Create new ingredient</h3>
+}
+<EditForm Model="@newIngredient" OnValidSubmit="@SaveIngredient">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <label>
+        Name:
+        <InputText @bind-Value="newIngredient.Name" />
+    </label><br>
+    <label>
+        Category:
+        <InputSelect @bind-Value=newIngredient.Category><br>
+            @foreach (var category in Enum.GetValues(typeof(IngredientCategory)))
+            { 
+                <option value="@category">@category.ToString()</option>
+            }
+        </InputSelect>
+    </label><br>
+    <label>
+        Unit:
+        <InputSelect @bind-Value=newIngredient.Unit><br>
+            @foreach (var unit in Enum.GetValues(typeof(IngredientUnit)))
+            { 
+                <option value="@unit">@unit.ToString()</option>
+            }
+        </InputSelect>
+    </label><br>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</EditForm>
+
+<hr>
+<h3>List of all ingredients</h3>
+@if (AllIngredients is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Unit</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ingredient in AllIngredients)
+            {
+                <tr>
+                    <td>@ingredient.Name</td>
+                    <td>@ingredient.Category</td>
+                    <td>@ingredient.Unit</td>
+                    <td><button type="button" @onclick="@(() => EditIngredient(ingredient))" class="btn"><span class="oi oi-pencil"></span></button></td>
+                    <td><button type="button" @onclick="@(() => DeleteIngredient(ingredient))" class="btn"><span class="oi oi-x"></span></button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private bool EditMode = false;
+    StringComparer comp = StringComparer.Create(CultureInfo.CreateSpecificCulture("cs-CZ"), false); //true/false - whether comparison should be case-sensitive
+    private List<IngredientModel> AllIngredients;
+
+    private DisplayIngredientModel newIngredient = new DisplayIngredientModel();
+    protected override async Task OnInitializedAsync()
+    {
+        AllIngredients = await _db.GetIngredients();
+        AllIngredients = AllIngredients.OrderBy(i => i.Name, comp).ThenBy(i => i.Id).ToList();
+    }
+    private async Task SaveIngredient()
+    {
+        try {
+            IngredientModel ingredient = new IngredientModel
+            {
+                Id = newIngredient.Id,
+                Name = newIngredient.Name,
+                Category = Enum.GetName(typeof(IngredientCategory), newIngredient.Category),
+                Unit = Enum.GetName(typeof(IngredientUnit), newIngredient.Unit)
+            };
+            if (!EditMode)
+            {
+                await _db.InsertIngredient(ingredient);
+                toastService.ShowSuccess($"{ingredient.Name} Added");
+            }
+            else {
+                await _db.UpdateIngredient(ingredient);
+                toastService.ShowSuccess($"{ingredient.Name} Updated");
+                EditMode = false;
+            }
+            AllIngredients = await _db.GetIngredients();
+            AllIngredients.OrderBy(i => i.Name, comp).ThenBy(i => i.Id);
+            newIngredient = new DisplayIngredientModel();    
+        }
+        catch {
+            toastService.ShowError("Something went wrong");
+        }
+    }
+
+    private void EditIngredient(IngredientModel ingredient)
+    {
+        EditMode = true;
+        newIngredient = new DisplayIngredientModel
+        {
+            Id = ingredient.Id,
+            Name = ingredient.Name,
+            Category = Enum.Parse<IngredientCategory>(ingredient.Category),
+            Unit = Enum.Parse<IngredientUnit>(ingredient.Unit)
+        };
+    }
+
+    private async Task DeleteIngredient(IngredientModel ingredient)
+    {
+        try {
+            await _db.DeleteIngredient(ingredient);
+            AllIngredients.Remove(ingredient);
+            toastService.ShowInfo($"{ingredient.Name} Deleted");
+        }
+        catch {
+            toastService.ShowError("Something went wrong");
+        }
+    }
+
+}

@@ -1,0 +1,50 @@
+@page "/Recipes"
+
+@using SharedLibrary.Enums
+@using DataAccessLibrary
+@using DataAccessLibrary.Models
+@using ScoutCookBook.Models
+@using System
+
+@inject IRecipeData _db
+
+<h1>Recipes Page</h1>
+
+@if (AllRecipes is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Název krmě</th>
+                <th>Recept</th>
+                <th>Pečet porcí</th>
+                <th>Typ jídla</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var Recipe in AllRecipes)
+            {
+                <tr>
+                    <td>@Recipe.Name</td>
+                    <td>@Recipe.Recipe</td>
+                    <td>@Recipe.NumberOfPortions</td>
+                    <td>@Recipe.Type</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<RecipeModel> AllRecipes;
+    private List<IngredientModel> AllIngredients;
+    protected override async Task OnInitializedAsync()
+    {
+        AllRecipes = await _db.GetRecipes();
+        AllIngredients = await _db.GetIngredients();
+    }
+}
