@@ -14,6 +14,12 @@ a, .btn-link {
     border-color: #1861ac;
 }
 
+.ui-selectbutton .ui-button.ui-state-active {
+    color: #fff;
+    background-color: #1b6ec2;
+    border: solid 1px #1861ac;
+}
+
 app {
     position: relative;
     display: flex;
