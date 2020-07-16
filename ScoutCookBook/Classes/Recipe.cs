@@ -45,6 +45,7 @@ namespace ScoutCookBook.Classes
         {
             return new RecipeModel
             {
+                Id = Id,
                 Name = this.Name,
                 Directions = this.Directions,
                 NumberOfPortions = this.NumberOfPortions,

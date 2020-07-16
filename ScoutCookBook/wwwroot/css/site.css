@@ -20,6 +20,10 @@ a, .btn-link {
     border: solid 1px #1861ac;
 }
 
+.daterangepicker td.active, .daterangepicker td.active:hover {
+    background-color: #1b6ec2;
+}
+
 app {
     position: relative;
     display: flex;

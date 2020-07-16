@@ -101,8 +101,15 @@ else if (!StepSecondFinnished)
         </div>
         <hr>
     }   
-    <button type="button" class="btn btn-danger" @onclick=BackToStepOne >Back (date selection)</button>
-    <button type="button" class="btn btn-primary" @onclick=@(()=> StepSecondFinnished = true )>Next (summary)</button>
+    <div class="row justify-content-between">
+        <div class="col">
+            <button type="button" class="btn btn-danger" @onclick=BackToStepOne >Back (date selection)</button>
+            <button type="button" class="btn btn-primary" @onclick=@(()=> StepSecondFinnished = true )>Next (summary)</button>
+        </div>
+        <div class="col-auto">
+            <em>Missing a recipe? <a href="/RecipeEditor" target="_blank">Create a new one</a>, after that, <button type="button" @onclick=ReloadRecipes >reload</button> recipe selection.</em>
+        </div>
+    </div>
 } 
 else
 {
@@ -193,6 +200,12 @@ else
     {
         meals.Add(new Meal() {Portions = StepOneForm.Portions});
         return meals;
+    }
+
+    private async Task ReloadRecipes() 
+    {
+        AllRecipes = await _db.GetRecipes();
+        ToastService.ShowSuccess($"List of recipes updated");
     }
 }
     
