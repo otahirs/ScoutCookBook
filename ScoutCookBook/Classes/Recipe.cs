@@ -1,13 +1,13 @@
-using System.ComponentModel.DataAnnotations;
-using SharedLibrary.Enums;
 using System;
 using System.Collections.Generic;
-using DataAccessLibrary.Models;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using DataAccessLibrary;
+using DataAccessLibrary.Models;
+using SharedLibrary.Enums;
 
-namespace ScoutCookBook.Models
+namespace ScoutCookBook.Classes
 {
     public class Recipe
     {

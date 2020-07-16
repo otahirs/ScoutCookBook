@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-namespace ScoutCookBook.Models
+
+namespace ScoutCookBook.Classes
 {
     public class MenuStepOneFormModel
     {

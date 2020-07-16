@@ -1,11 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using DataAccessLibrary.Models;
-using SharedLibrary.Enums;
-using System.Linq;
 
-namespace ScoutCookBook.Models
+namespace ScoutCookBook.Classes
 {
     public class Meal
     {
@@ -33,7 +28,7 @@ namespace ScoutCookBook.Models
                         Recipes = new List<Recipe>() { Recipe }
                     });
                 }
-               return ia;
+                return ia;
             }
         }
 
@@ -45,7 +40,7 @@ namespace ScoutCookBook.Models
             sb.AppendLine("Ingredients:");
             foreach (var ia in IngredientsAmount)
             {
-                sb.AppendLine($"  {ia.Ingredient.Name}: {ia.Ingredient.UnitAmountFormated(ia.TotalAmount, ia.Ingredient.Unit) }");
+                sb.AppendLine($"  {ia.Ingredient.Name}: {Ingredient.UnitAmountFormated(ia.TotalAmount, ia.Ingredient.Unit) }");
             }
             sb.AppendLine();
             sb.AppendLine("Recipe:");

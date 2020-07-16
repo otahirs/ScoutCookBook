@@ -1,6 +1,6 @@
-@using ScoutCookBook.Models
 @using SharedLibrary.Enums
 @using System.Linq
+@using ScoutCookBook.Classes
 @inject IJSRuntime js
 
 <div class="row">
@@ -36,14 +36,14 @@
     <div class="card-body">
         <h3 class="card-title">Shopping List</h3>
         <p class="card-text">  
-        @foreach(var cathegory in ShoppingList)
+        @foreach(var (category, ingredientAmounts) in ShoppingList)
         {
-            @cathegory.Key.ToString()
+            @category.ToString()
             <ul>
-                @foreach (var ia in cathegory.Value)
+                @foreach (var ia in ingredientAmounts)
                 {
                     var last = ia.Recipes.Last();
-                    <li><b>@ia.Ingredient.Name: @ia.Ingredient.UnitAmountFormated(ia.TotalAmount, ia.Ingredient.Unit)</b>
+                    <li><b>@ia.Ingredient.Name: @Ingredient.UnitAmountFormated(ia.TotalAmount, ia.Ingredient.Unit)</b>
                         <em>(
                         @foreach (var recipe in ia.Recipes)
                         {
@@ -98,13 +98,13 @@
     private async Task DownloadShoppingList() {
         var sb = new System.Text.StringBuilder();
         sb.AppendLine("Shopping list");
-        foreach(var cathegory in ShoppingList)
+        foreach(var (category, ingredientAmounts) in ShoppingList)
         {
-            sb.AppendLine(cathegory.Key.ToString());
-            foreach (var ia in cathegory.Value)
+            sb.AppendLine(category.ToString());
+            foreach (var ia in ingredientAmounts)
             {
                 var last = ia.Recipes.Last();
-                sb.Append($" - {ia.Ingredient.Name}: {ia.Ingredient.UnitAmountFormated(ia.TotalAmount, ia.Ingredient.Unit) } (");
+                sb.Append($" - {ia.Ingredient.Name}: {Ingredient.UnitAmountFormated(ia.TotalAmount, ia.Ingredient.Unit) } (");
                 foreach (var recipe in ia.Recipes)
                 {
                     sb.Append(recipe.Name);

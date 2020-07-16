@@ -4,8 +4,8 @@
 @using SharedLibrary.Enums
 @using DataAccessLibrary
 @using DataAccessLibrary.Models
-@using ScoutCookBook.Models
 @using System
+@using ScoutCookBook.Classes
 
 @inject NavigationManager NavManager
 @inject IToastService toastService
@@ -18,27 +18,24 @@
 else
 {
     var header = "";
-    if(RecipeId == null) 
-        header = "Create recipe";
-    else 
-        header = "Edit recipe";
-        
+    header = RecipeId == null ? "Create recipe" : "Edit recipe";
+
     <h1>@header</h1>    
     <EditForm Model="@Recipe" OnValidSubmit="@InsertRecipe">
         <DataAnnotationsValidator />
         <ValidationSummary />
 
         <label>
-            Název jídla:
+            Recipe name:
             <InputText  @bind-Value="@Recipe.Name" />
         </label><br>
         <label>
-            Pro kolik osob je recept:
+            How many people are the ingredients for:
             <InputNumber @bind-Value="@Recipe.NumberOfPortions" />
         </label><br>
         
         <label>
-            Typ jídla:
+            Meal type:
             <InputSelect @bind-Value="@Recipe.Type"><br>
                 @foreach (var type in Enum.GetValues(typeof(DishType)))
                 { 
@@ -47,7 +44,7 @@ else
             </InputSelect>
         </label>
         <hr>
-        <label>Ingredience:</label>
+        <label>Ingredients:</label>
             @foreach (var ingredient in Recipe.Ingredients)
             { 
                 @* <select @onchange=@( e => IngredientUpdated(e, ingredient))>
@@ -153,15 +150,15 @@ else
     }
     private async Task InsertRecipe()
     {
-        var RecipeToDb = Recipe.GetRecipeModel();
+        var recipeToDb = Recipe.GetRecipeModel();
 
         if (RecipeId == null)
         {
-            Recipe.Id = await _db.InsertRecipe(RecipeToDb);
+            Recipe.Id = await _db.InsertRecipe(recipeToDb);
         }
         else
         {
-            await _db.UpdateRecipe(RecipeToDb);
+            await _db.UpdateRecipe(recipeToDb);
             await _db.DeleteAllIngredientsInRecipe(Recipe.Id);
         }
              

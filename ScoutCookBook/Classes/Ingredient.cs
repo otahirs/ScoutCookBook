@@ -1,9 +1,9 @@
-using System.ComponentModel.DataAnnotations;
-using SharedLibrary.Enums;
 using System;
+using System.ComponentModel.DataAnnotations;
 using DataAccessLibrary.Models;
+using SharedLibrary.Enums;
 
-namespace ScoutCookBook.Models
+namespace ScoutCookBook.Classes
 {
     public class Ingredient
     {
@@ -29,7 +29,7 @@ namespace ScoutCookBook.Models
             };
         }
 
-        public string UnitAmountFormated(double Amount, IngredientUnit Unit) 
+        public static string UnitAmountFormated(double Amount, IngredientUnit Unit) 
         {
             switch (Unit)
             {
@@ -58,9 +58,9 @@ namespace ScoutCookBook.Models
             }
         }
 
-        public string UnitAmountFormated()
-        {
-            return UnitAmountFormated((double)Amount, Unit); 
-        }
+        //public string UnitAmountFormated()
+        //{
+        //    return UnitAmountFormated((double)Amount, Unit); 
+        //}
     }
 }

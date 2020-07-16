@@ -3,11 +3,11 @@
 @using SharedLibrary.Enums
 @using DataAccessLibrary
 @using DataAccessLibrary.Models
-@using ScoutCookBook.Models
 @using System
 @using System.Globalization
+@using ScoutCookBook.Classes
 
-@inject IToastService toastService
+@inject IToastService ToastService
 @inject IRecipeData _db
 
 <h1>Ingredients</h1>
@@ -30,7 +30,7 @@ else
     </label><br>
     <label>
         Category:
-        <InputSelect @bind-Value=newIngredient.Category><br>
+        <InputSelect @bind-Value="newIngredient.Category"><br>
             @foreach (var category in Enum.GetValues(typeof(IngredientCategory)))
             { 
                 <option value="@category">@category.ToString()</option>
@@ -39,7 +39,7 @@ else
     </label><br>
     <label>
         Unit:
-        <InputSelect @bind-Value=newIngredient.Unit><br>
+        <InputSelect @bind-Value="newIngredient.Unit"><br>
             @foreach (var unit in Enum.GetValues(typeof(IngredientUnit)))
             { 
                 <option value="@unit">@unit.ToString()</option>
@@ -85,7 +85,7 @@ else
 
 @code {
     private bool EditMode = false;
-    StringComparer comp = StringComparer.Create(CultureInfo.CreateSpecificCulture("cs-CZ"), false); //true/false - whether comparison should be case-sensitive
+    readonly StringComparer comp = StringComparer.Create(CultureInfo.CreateSpecificCulture("cs-CZ"), false); //true/false - whether comparison should be case-sensitive
     private List<IngredientModel> AllIngredients;
 
     private Ingredient newIngredient = new Ingredient();
@@ -97,7 +97,7 @@ else
     private async Task SaveIngredient()
     {
         try {
-            IngredientModel ingredient = new IngredientModel
+            var ingredient = new IngredientModel
             {
                 Id = newIngredient.Id,
                 Name = newIngredient.Name,
@@ -107,11 +107,11 @@ else
             if (!EditMode)
             {
                 await _db.InsertIngredient(ingredient);
-                toastService.ShowSuccess($"{ingredient.Name} Added");
+                ToastService.ShowSuccess($"{ingredient.Name} Added");
             }
             else {
                 await _db.UpdateIngredient(ingredient);
-                toastService.ShowSuccess($"{ingredient.Name} Updated");
+                ToastService.ShowSuccess($"{ingredient.Name} Updated");
                 EditMode = false;
             }
             AllIngredients = await _db.GetIngredients();
@@ -119,7 +119,7 @@ else
             newIngredient = new Ingredient();
         }
         catch {
-            toastService.ShowError("Something went wrong");
+            ToastService.ShowError("Something went wrong");
         }
     }
 
@@ -140,10 +140,10 @@ else
         try {
             await _db.DeleteIngredient(ingredient);
             AllIngredients.Remove(ingredient);
-            toastService.ShowSuccess($"{ingredient.Name} Deleted");
+            ToastService.ShowSuccess($"{ingredient.Name} Deleted");
         }
         catch {
-            toastService.ShowError("Something went wrong");
+            ToastService.ShowError("Something went wrong");
         }
     }
 

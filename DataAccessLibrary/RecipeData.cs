@@ -17,21 +17,21 @@ namespace DataAccessLibrary
 
         public Task<List<RecipeModel>> GetRecipes()
         {
-            string sql = "SELECT * FROM recipe;";
+            const string sql = "SELECT * FROM recipe;";
 
             return _db.LoadData<RecipeModel, dynamic>(sql, new { });
         }
 
         public Task<List<IngredientModel>> GetIngredients()
         {
-            string sql = "SELECT * FROM ingredient ORDER BY name ASC, id DESC;";
+            const string sql = "SELECT * FROM ingredient ORDER BY name ASC, id DESC;";
 
             return _db.LoadData<IngredientModel, dynamic>(sql, new { });
         }
 
         public Task<List<IngredientInRecipeModel>> GetIngredientsInRecipe(int RecipeId)
         {
-            string sql = @"SELECT ingredient.Id, recipe.Id as RecipeId, ingredient.Name, ingredient.Category, ingredient.Unit, recipe_ingredient.Amount FROM ingredient
+            const string sql = @"SELECT ingredient.Id, recipe.Id as RecipeId, ingredient.Name, ingredient.Category, ingredient.Unit, recipe_ingredient.Amount FROM ingredient
                             INNER JOIN recipe_ingredient
                                 ON recipe_ingredient.ingredient_id = ingredient.id
                             INNER JOIN recipe
@@ -43,50 +43,50 @@ namespace DataAccessLibrary
 
         public Task<List<PersonModel>> GetPeople()
         {
-            string sql = "SELECT * FROM person;";
+            const string sql = "SELECT * FROM person;";
 
             return _db.LoadData<PersonModel, dynamic>(sql, new { });
         }
 
-        public Task<int> InsertPerson(PersonModel Person)
+        public Task<int> InsertPerson(PersonModel person)
         {
-            string sql = @"INSERT INTO person (Name, Coefficient)
+            const string sql = @"INSERT INTO person (Name, Coefficient)
                            VALUES (@Name, @Coefficient);";
 
-            return _db.SaveData<PersonModel>(sql, Person);
+            return _db.SaveData<PersonModel>(sql, person);
         }
 
-        public Task UpdatePerson(PersonModel Person)
+        public Task UpdatePerson(PersonModel person)
         {
-            string sql = @"UPDATE person 
+            const string sql = @"UPDATE person 
                             SET 
                                 Name = @Name, 
                                 Coefficient = @Coefficient
                             WHERE
                                 Id = @Id;";
 
-            return _db.SaveData<PersonModel>(sql, Person);
+            return _db.SaveData<PersonModel>(sql, person);
         }
 
-        public Task DeletePerson(PersonModel Person)
+        public Task DeletePerson(PersonModel person)
         {
-            string sql = @"DELETE FROM person WHERE Id = @Id;";
+            const string sql = @"DELETE FROM person WHERE Id = @Id;";
 
-            return _db.SaveData<PersonModel>(sql, Person);
+            return _db.SaveData<PersonModel>(sql, person);
         }
 
 
-        public Task<int> InsertRecipe(RecipeModel Recipe)
+        public Task<int> InsertRecipe(RecipeModel recipe)
         {
-            string sql = @"INSERT INTO RECIPE (Name, Directions, NumberOfPortions, Type)
+            const string sql = @"INSERT INTO RECIPE (Name, Directions, NumberOfPortions, Type)
                            VALUES (@Name, @Directions, @NumberOfPortions, @Type);";
 
-            return _db.SaveData<RecipeModel>(sql, Recipe);
+            return _db.SaveData<RecipeModel>(sql, recipe);
         }
 
-        public Task UpdateRecipe(RecipeModel Recipe)
+        public Task UpdateRecipe(RecipeModel recipe)
         {
-            string sql = @"UPDATE recipe 
+            const string sql = @"UPDATE recipe 
                             SET 
                                 Name = @Name, 
                                 Directions = @Directions, 
@@ -95,59 +95,59 @@ namespace DataAccessLibrary
                             WHERE
                                 Id = @Id;";
 
-            return _db.SaveData<RecipeModel>(sql, Recipe);
+            return _db.SaveData<RecipeModel>(sql, recipe);
         }
 
-        public Task DeleteRecipe(int RecipeId)
+        public Task DeleteRecipe(int recipeId)
         {
-            DeleteAllIngredientsInRecipe(RecipeId);
+            DeleteAllIngredientsInRecipe(recipeId);
             
-            string sql = @"DELETE FROM recipe WHERE Id = @Id";
+            const string sql = @"DELETE FROM recipe WHERE Id = @Id";
             
-            return _db.SaveData(sql, new { Id = RecipeId });
+            return _db.SaveData(sql, new { Id = recipeId });
         }
 
         
 
-        public Task<int> InsertIngredient(IngredientModel Ingredient)
+        public Task<int> InsertIngredient(IngredientModel ingredient)
         {
-            string sql = @"INSERT INTO ingredient (Name, Category, Unit)
+            const string sql = @"INSERT INTO ingredient (Name, Category, Unit)
                            VALUES (@Name, @Category, @Unit);";
-            
-            return _db.SaveData<IngredientModel>(sql, Ingredient);
+
+            return _db.SaveData<IngredientModel>(sql, ingredient);
         }
 
-        public Task DeleteIngredient(IngredientModel Ingredient)
+        public Task DeleteIngredient(IngredientModel ingredient)
         {
-            string sql = @"DELETE FROM ingredient WHERE Id = @Id";
-            
-            return _db.SaveData(sql, new { Id = Ingredient.Id });
+            const string sql = @"DELETE FROM ingredient WHERE Id = @Id";
+
+            return _db.SaveData(sql, new { Id = ingredient.Id });
         }
 
-        public Task UpdateIngredient(IngredientModel Ingredient)
+        public Task UpdateIngredient(IngredientModel ingredient)
         {
-            string sql = @"UPDATE ingredient
+            const string sql = @"UPDATE ingredient
                             SET name = @Name,
                                 category = @Category,
                                 unit = @Unit
                             WHERE
                                 Id = @Id";
-            
-            return _db.SaveData(sql, Ingredient);
+
+            return _db.SaveData(sql, ingredient);
         }
 
-        public Task InsertIngredientInRecipe(IngredientInRecipeModel Ingredient)
+        public Task InsertIngredientInRecipe(IngredientInRecipeModel ingredient)
         {
-            string sql = @"INSERT INTO recipe_ingredient (recipe_id, ingredient_id, amount)
+            const string sql = @"INSERT INTO recipe_ingredient (recipe_id, ingredient_id, amount)
                            VALUES (@RecipeId, @IngredientId, @Amount);";
-            
-            return _db.SaveData<dynamic>(sql, new {RecipeId = Ingredient.RecipeId, IngredientId = Ingredient.Id, Ingredient.Amount});
+
+            return _db.SaveData<dynamic>(sql, new {RecipeId = ingredient.RecipeId, IngredientId = ingredient.Id, ingredient.Amount});
         }
-        public Task DeleteAllIngredientsInRecipe(int RecipeId)
+        public Task DeleteAllIngredientsInRecipe(int recipeId)
         {
-            string sql = @"DELETE FROM recipe_ingredient WHERE recipe_id = @RecipeId";
-            
-            return _db.SaveData(sql, new { RecipeId = RecipeId });
+            const string sql = @"DELETE FROM recipe_ingredient WHERE recipe_id = @RecipeId";
+
+            return _db.SaveData(sql, new { RecipeId = recipeId });
         }
 
        

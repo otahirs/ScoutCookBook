@@ -6,7 +6,7 @@
 @using System.Globalization
 
 @inject NavigationManager NavManager
-@inject IToastService toastService
+@inject IToastService ToastService
 @inject IModalService Modal
 @inject IRecipeData _db
 
@@ -45,7 +45,7 @@ else
 }
 
 @code {
-    StringComparer comp = StringComparer.Create(CultureInfo.CreateSpecificCulture("cs-CZ"), false); //true/false - whether comparison should be case-sensitive
+    readonly StringComparer comp = StringComparer.Create(CultureInfo.CreateSpecificCulture("cs-CZ"), false); //true/false - whether comparison should be case-sensitive
     private List<RecipeModel> AllRecipes;
 
     protected override async Task OnInitializedAsync()
@@ -56,7 +56,7 @@ else
     private async Task DeleteRecipe(RecipeModel Recipe)
     {
         var modalParameters = new ModalParameters();
-        modalParameters.Add(nameof(ConfirmModal.Message), "Recipe will be pernamentrly deleted");
+        modalParameters.Add(nameof(ConfirmModal.Message), "Recipe will be permanently deleted");
         modalParameters.Add(nameof(ConfirmModal.ConfirmButtonText), "Delete");
         var modalOptions = new ModalOptions() { HideCloseButton = true};
 
@@ -66,7 +66,7 @@ else
         {
             await _db.DeleteRecipe(Recipe.Id);
             AllRecipes.Remove(Recipe);
-            toastService.ShowSuccess($"{Recipe.Name} Deleted");
+            ToastService.ShowSuccess($"{Recipe.Name} Deleted");
         }  
         
     }

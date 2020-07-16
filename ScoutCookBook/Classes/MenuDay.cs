@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ScoutCookBook.Models
+namespace ScoutCookBook.Classes
 {
     public class MenuDay
     {
@@ -30,7 +30,7 @@ namespace ScoutCookBook.Models
 
         public override string ToString()
         {
-            var mealPadding = 11;
+            const int mealPadding = 11;
             var sb = new System.Text.StringBuilder();
             sb.Append(Date.DayOfWeek.ToString());
             sb.Append(" ");
@@ -45,7 +45,7 @@ namespace ScoutCookBook.Models
                 foreach (var meal in meals)
                 {
                     if (meal != first) sb.Append(new string(' ', mealPadding + 2));
-                    sb.AppendLine(meal.Recipe.Name);
+                    sb.AppendLine(meal?.Recipe.Name);
                 }
             }
             return sb.ToString();

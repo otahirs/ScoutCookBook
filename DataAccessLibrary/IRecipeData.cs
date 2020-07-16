@@ -7,22 +7,22 @@ namespace DataAccessLibrary
     public interface IRecipeData
     {
         Task<List<RecipeModel>> GetRecipes();
-        Task<int> InsertRecipe(RecipeModel Recipe);
-        Task UpdateRecipe(RecipeModel Recipe);
-        Task DeleteRecipe(int RecipeId);
+        Task<int> InsertRecipe(RecipeModel recipe);
+        Task UpdateRecipe(RecipeModel recipe);
+        Task DeleteRecipe(int recipeId);
 
         Task<List<IngredientModel>> GetIngredients();
-        Task<int> InsertIngredient(IngredientModel Ingredient);
-        Task DeleteIngredient(IngredientModel Ingredient);
-        Task UpdateIngredient(IngredientModel Ingredient);
+        Task<int> InsertIngredient(IngredientModel ingredient);
+        Task DeleteIngredient(IngredientModel ingredient);
+        Task UpdateIngredient(IngredientModel ingredient);
 
-        Task<List<IngredientInRecipeModel>> GetIngredientsInRecipe(int RecipeId);
-        Task InsertIngredientInRecipe(IngredientInRecipeModel Ingredient);
-        Task DeleteAllIngredientsInRecipe(int RecipeId);
+        Task<List<IngredientInRecipeModel>> GetIngredientsInRecipe(int recipeId);
+        Task InsertIngredientInRecipe(IngredientInRecipeModel ingredient);
+        Task DeleteAllIngredientsInRecipe(int recipeId);
 
-        Task<int> InsertPerson(PersonModel Person);
-        Task UpdatePerson(PersonModel Person);
+        Task<int> InsertPerson(PersonModel person);
+        Task UpdatePerson(PersonModel person);
         Task<List<PersonModel>> GetPeople();
-        Task DeletePerson(PersonModel Person);
+        Task DeletePerson(PersonModel person);
     }
 }

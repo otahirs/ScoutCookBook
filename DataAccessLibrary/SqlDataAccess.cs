@@ -18,20 +18,19 @@ namespace DataAccessLibrary
         public SqlDataAccess() 
         {
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;  
-            var dbFilePath = "./cookbook.sqlite";
+            const string dbFilePath = "./cookbook.sqlite";
             if (!File.Exists(dbFilePath))
             {
                 SQLiteConnection.CreateFile(dbFilePath);
             }
-            connectionString = string.Format("Data Source={0};", dbFilePath);
+            connectionString = $"Data Source={dbFilePath};";
             CreateTables();
         }
 
         private void CreateTables()
         {
-            using (IDbConnection connection = new SQLiteConnection(connectionString))
-            {
-                string sql = @"
+            using IDbConnection connection = new SQLiteConnection(connectionString);
+            const string sql = @"
 
                     CREATE TABLE IF NOT EXISTS ""RECIPE"" (
                         id INTEGER PRIMARY KEY,
@@ -68,36 +67,29 @@ namespace DataAccessLibrary
                         name TEXT NOT NULL,
                         coefficient REAL NOT NULL
                     );";
-                connection.Execute(sql);
-            }
+            connection.Execute(sql);
         }
 
         public async Task<List<T>> LoadData<T, U>(string sql, U parameters)
         {
+            using IDbConnection connection = new SQLiteConnection(connectionString);
+            var data = await connection.QueryAsync<T>(sql, parameters);
 
-            using (IDbConnection connection = new SQLiteConnection(connectionString))
-            {
-                var data = await connection.QueryAsync<T>(sql, parameters);
-
-                return data.ToList();
-            }
+            return data.ToList();
         }
 
         public async Task<int> SaveData<T>(string sql, T parameters)
         {
+            await using SQLiteConnection connection = new SQLiteConnection(connectionString);
+            SQLiteTransaction transaction = null;
+            connection.Open();
 
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-            {
-                SQLiteTransaction transaction = null;
-                connection.Open();
+            transaction = connection.BeginTransaction();
+            await connection.ExecuteAsync(sql, parameters);
+            var rowId = (int)connection.LastInsertRowId;
+            transaction.Commit();
 
-                transaction = connection.BeginTransaction();
-                    await connection.ExecuteAsync(sql, parameters);
-                    var rowID = (int)connection.LastInsertRowId;
-                transaction.Commit();
-
-                return rowID;
-            }
+            return rowId;
         }
 
     }

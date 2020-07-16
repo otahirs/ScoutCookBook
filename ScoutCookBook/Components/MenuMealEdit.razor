@@ -1,6 +1,5 @@
-
-@using Models
 @using DataAccessLibrary.Models
+@using ScoutCookBook.Classes
 
 <div class="row">
     <div class="col-12">
@@ -41,7 +40,7 @@
             <ul>
             @foreach(var ia in Meal.IngredientsAmount)
             {
-                <li>@ia.Ingredient.Name: @ia.Ingredient.UnitAmountFormated(ia.TotalAmount, ia.Ingredient.Unit)</li>
+                <li>@ia.Ingredient.Name: @Ingredient.UnitAmountFormated(ia.TotalAmount, ia.Ingredient.Unit)</li>
             }
             </ul>
             </p>

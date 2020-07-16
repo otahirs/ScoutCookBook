@@ -3,11 +3,10 @@
 @using SharedLibrary.Enums
 @using DataAccessLibrary
 @using DataAccessLibrary.Models
-@using ScoutCookBook.Models
 @using System
 @using System.Globalization
 
-@inject IToastService toastService
+@inject IToastService ToastService
 @inject IRecipeData _db
 
 <h1>People</h1>
@@ -54,13 +53,13 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var Person in People)
+            @foreach (var person in People)
             {
                 <tr>
-                    <td>@Person.Name</td>
-                    <td>@Person.Coefficient</td>
-                    <td><button type="button" @onclick="@(() => EditPerson(Person))" class="btn"><span class="oi oi-pencil"></span></button></td>
-                    <td><button type="button" @onclick="@(() => DeletePerson(Person))" class="btn"><span class="oi oi-x"></span></button></td>
+                    <td>@person.Name</td>
+                    <td>@person.Coefficient</td>
+                    <td><button type="button" @onclick="@(() => EditPerson(person))" class="btn"><span class="oi oi-pencil"></span></button></td>
+                    <td><button type="button" @onclick="@(() => DeletePerson(person))" class="btn"><span class="oi oi-x"></span></button></td>
                 </tr>
             }
         </tbody>
@@ -80,7 +79,7 @@ else
     private async Task SavePerson()
     {
         try {
-            PersonModel Person = new PersonModel
+            var person = new PersonModel
             {
                 Id = PersonForm.Id,
                 Name = PersonForm.Name,
@@ -88,12 +87,12 @@ else
             };
             if (!EditMode)
             {
-                await _db.InsertPerson(Person);
-                toastService.ShowSuccess($"{Person.Name} Added");
+                await _db.InsertPerson(person);
+                ToastService.ShowSuccess($"{person.Name} Added");
             }
             else {
-                await _db.UpdatePerson(Person);
-                toastService.ShowSuccess($"{Person.Name} Updated");
+                await _db.UpdatePerson(person);
+                ToastService.ShowSuccess($"{person.Name} Updated");
                 EditMode = false;
             }
             People = await _db.GetPeople();
@@ -101,7 +100,7 @@ else
             PersonForm = new PersonModel();    
         }
         catch {
-            toastService.ShowError("Something went wrong");
+            ToastService.ShowError("Something went wrong");
         }
     }
 
@@ -116,15 +115,15 @@ else
         };
     }
 
-    private async Task DeletePerson(PersonModel Person)
+    private async Task DeletePerson(PersonModel person)
     {
         try {
-            await _db.DeletePerson(Person);
-            People.Remove(Person);
-            toastService.ShowSuccess($"{Person.Name} Deleted");
+            await _db.DeletePerson(person);
+            People.Remove(person);
+            ToastService.ShowSuccess($"{person.Name} Deleted");
         }
         catch {
-            toastService.ShowError("Something went wrong");
+            ToastService.ShowError("Something went wrong");
         }
     }
 

@@ -1,12 +1,12 @@
 @page "/Menu"
-@using Models
 @using DataAccessLibrary
 @using DataAccessLibrary.Models
 @using SharedLibrary.Enums
 @using BlazorDateRangePicker
+@using ScoutCookBook.Classes
 @using ScoutCookBook.Components
 @inject NavigationManager NavManager
-@inject IToastService toastService
+@inject IToastService ToastService
 @inject IModalService Modal
 @inject IRecipeData _db
 
@@ -85,8 +85,8 @@ else if (!StepSecondFinnished)
             <div class="col-12">
                 <h3>@menuDay.Date.DayOfWeek.ToString() @menuDay.Date.ToString("d. MMMM")</h3>
             </div>
-            @if(!menuDay.Slots.Any(s => s.Key == "Breakfast")) { <div class="col-4"></div> 
-            @if(!menuDay.Slots.Any(s => s.Key == "Lunch")) { <div class="col-4"></div> }}
+            @if(menuDay.Slots.All(s => s.Key != "Breakfast")) { <div class="col-4"></div> 
+            @if(menuDay.Slots.All(s => s.Key != "Lunch")) { <div class="col-4"></div> }}
             @foreach(var (slotName, meals) in menuDay.Slots) 
             {
                 <div class="col-4">

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using DataAccessLibrary.Models;
 
-namespace ScoutCookBook.Models
+namespace ScoutCookBook.Classes
 {
     public class Portion
     {
