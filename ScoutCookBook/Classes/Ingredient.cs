@@ -5,7 +5,7 @@ using DataAccessLibrary.Models;
 
 namespace ScoutCookBook.Models
 {
-    public class DisplayIngredientModel
+    public class Ingredient
     {
         public int Id { get; set; }
         [Required]
@@ -26,20 +26,6 @@ namespace ScoutCookBook.Models
                 Name = this.Name,
                 Category = Enum.GetName(typeof(IngredientCategory), this.Category),
                 Unit = Enum.GetName(typeof(IngredientUnit), this.Unit)
-            };
-        }
-
-        public IngredientInRecipeModel GetIngredientInRecipeModel(int RecipeId)
-        {
-            return new IngredientInRecipeModel
-            {
-                Id = this.Id,
-                RecipeId = RecipeId,
-                Name = this.Name,
-                Category = Enum.GetName(typeof(IngredientCategory), this.Category),
-                Unit = Enum.GetName(typeof(IngredientUnit), this.Unit),
-                Amount = this.Amount,
-
             };
         }
 

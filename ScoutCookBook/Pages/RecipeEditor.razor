@@ -23,7 +23,7 @@ else
     else 
         header = "Edit recipe";
         
-    <h1>@header</h1>
+    <h1>@header</h1>    
     <EditForm Model="@Recipe" OnValidSubmit="@InsertRecipe">
         <DataAnnotationsValidator />
         <ValidationSummary />
@@ -123,7 +123,7 @@ else
         <hr>
         <label style="display:block;">
             Popis přípravy:
-            <textarea @bind-value="Recipe.Recipe" @bind-value:event="oninput" rows="@Recipe.Rows" style="width:50%;display:block;resize:horizontal;overflow:hidden;" />
+            <textarea @bind-value="Recipe.Directions" @bind-value:event="oninput" rows="@Recipe.DirectionsRowCount" style="width:50%;display:block;resize:horizontal;overflow:hidden;" />
         </label>
         <hr>
         <button type="submit" class="btn btn-primary">Submit</button>
@@ -137,14 +137,14 @@ else
     public int? RecipeId { get; set; }
 
     private bool CreateIngredientIsActive = false;
-    private DisplayRecipeModel Recipe;
+    private Recipe Recipe;
     private List<IngredientModel> AllIngredients;
 
-    private DisplayIngredientModel newIngredient = new DisplayIngredientModel();
+    private Ingredient newIngredient = new Ingredient();
     protected override async Task OnInitializedAsync()
     {
         AllIngredients = await _db.GetIngredients();
-        Recipe = new DisplayRecipeModel();
+        Recipe = new Recipe();
         if (RecipeId != null) 
         {
             await Recipe.LoadAsync((int)RecipeId);
@@ -180,14 +180,11 @@ else
         }
         toastService.ShowSuccess($"Recipe {(RecipeId == null ? "created" : "updated")}");
         if (RecipeId == null) NavManager.NavigateTo($"/RecipeEditor/{Recipe.Id}");
-        //Recipe = new DisplayRecipeModel();
     }
 
     private void AddIngredient() {
-        Recipe.Ingredients.Add(new DisplayIngredientModel());
+        Recipe.Ingredients.Add(new Ingredient());
     }
-
-    // create ingredient 
 
     private async Task SaveIngredient()
     {
@@ -199,13 +196,13 @@ else
             newIngredient.Id = ingredientToDb.Id;
             Recipe.Ingredients.Add(newIngredient);
 
-            newIngredient = new DisplayIngredientModel(); 
+            newIngredient = new Ingredient(); 
             CreateIngredientIsActive = false;   
 
             toastService.ShowSuccess($"{ingredientToDb.Name} Added");
     }
 
-    private void IngredientUpdated(object id, DisplayIngredientModel ingredient)
+    private void IngredientUpdated(object id, Ingredient ingredient)
     {
         if ((int)id == 0) return;
         var selected = AllIngredients.First(i => i.Id == (int)id);

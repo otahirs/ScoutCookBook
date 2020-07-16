@@ -78,8 +78,8 @@ namespace DataAccessLibrary
 
         public Task<int> InsertRecipe(RecipeModel Recipe)
         {
-            string sql = @"INSERT INTO RECIPE (Name, Recipe, NumberOfPortions, Type)
-                           VALUES (@Name, @Recipe, @NumberOfPortions, @Type);";
+            string sql = @"INSERT INTO RECIPE (Name, Directions, NumberOfPortions, Type)
+                           VALUES (@Name, @Directions, @NumberOfPortions, @Type);";
 
             return _db.SaveData<RecipeModel>(sql, Recipe);
         }
@@ -89,7 +89,7 @@ namespace DataAccessLibrary
             string sql = @"UPDATE recipe 
                             SET 
                                 Name = @Name, 
-                                Recipe = @Recipe, 
+                                Directions = @Directions, 
                                 NumberOfPortions = @NumberOfPortions, 
                                 Type = @Type
                             WHERE

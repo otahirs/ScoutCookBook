@@ -10,24 +10,17 @@
     <h3 class="card-title">Menu</h3>
     @foreach(var menuDay in Menu) {
         <h5>@menuDay.Date.DayOfWeek.ToString() @menuDay.Date.ToString("d. MMMM")</h5>
-        var slots = new string[] {"Breakfast", "Lunch", "Dinner"};
-        @foreach(var slot in slots) {
-            var meals = (List<Meal>)menuDay.GetType().GetProperty(slot + "Meals").GetValue(menuDay, null); @* ugly as F *@
+        @foreach(var (slotName, meals) in menuDay.Slots) {
             <div class="row">
-            @if(meals != null)
-            {
                 <div class="col-2">
-                    <b>@slot</b>
+                    <b>@slotName</b>
                 </div>
                 <div class="col">
                 @foreach (var meal in meals)
                 {
-                    
                     @meal.Recipe.Name<br>
-                
                 }
                 </div>
-            }
             </div>
         }
         <br>
@@ -50,7 +43,7 @@
                 @foreach (var ia in cathegory.Value)
                 {
                     var last = ia.Recipes.Last();
-                    <li>@ia.Ingredient.Name: @ia.Ingredient.UnitAmountFormated(ia.TotalAmount, ia.Ingredient.Unit) 
+                    <li><b>@ia.Ingredient.Name: @ia.Ingredient.UnitAmountFormated(ia.TotalAmount, ia.Ingredient.Unit)</b>
                         <em>(
                         @foreach (var recipe in ia.Recipes)
                         {
@@ -146,18 +139,12 @@
         var sb = new System.Text.StringBuilder();
 
         foreach(var menuDay in this.Menu) {
-        var slots = new string[] {"Breakfast", "Lunch", "Dinner"};
-            foreach(var slot in slots) {
-                var meals = (List<Meal>)menuDay.GetType().GetProperty(slot + "Meals").GetValue(menuDay, null); // ugly as F 
-                if(meals != null)
+            foreach(var (_,meals) in menuDay.Slots) {
+                foreach (var meal in meals)
                 {
-                    foreach (var meal in meals)
-                    {
-                        sb.AppendLine("-------------------------");
-                        sb.AppendLine();
-                        sb.AppendLine(meal.ToString());
-                    
-                    }
+                    sb.AppendLine("-------------------------");
+                    sb.AppendLine();
+                    sb.AppendLine(meal.ToString());
                 }
             }
         }

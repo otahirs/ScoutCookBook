@@ -48,7 +48,7 @@ else
     </label><br>
 
     <button type="submit" class="btn btn-primary">Save</button>
-    <button type="button" class="btn btn-secondary" @onclick="@(() => {EditMode = false; newIngredient= new DisplayIngredientModel();})">Cancel</button>
+    <button type="button" class="btn btn-secondary" @onclick="@(() => {EditMode = false; newIngredient= new Ingredient();})">Cancel</button>
 </EditForm>
 
 <br>
@@ -88,7 +88,7 @@ else
     StringComparer comp = StringComparer.Create(CultureInfo.CreateSpecificCulture("cs-CZ"), false); //true/false - whether comparison should be case-sensitive
     private List<IngredientModel> AllIngredients;
 
-    private DisplayIngredientModel newIngredient = new DisplayIngredientModel();
+    private Ingredient newIngredient = new Ingredient();
     protected override async Task OnInitializedAsync()
     {
         AllIngredients = await _db.GetIngredients();
@@ -116,7 +116,7 @@ else
             }
             AllIngredients = await _db.GetIngredients();
             AllIngredients.OrderBy(i => i.Name, comp).ThenBy(i => i.Id);
-            newIngredient = new DisplayIngredientModel();    
+            newIngredient = new Ingredient();
         }
         catch {
             toastService.ShowError("Something went wrong");
@@ -126,7 +126,7 @@ else
     private void EditIngredient(IngredientModel ingredient)
     {
         EditMode = true;
-        newIngredient = new DisplayIngredientModel
+        newIngredient = new Ingredient
         {
             Id = ingredient.Id,
             Name = ingredient.Name,

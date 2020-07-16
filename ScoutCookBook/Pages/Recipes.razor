@@ -11,7 +11,8 @@
 @inject IRecipeData _db
 
 <h1>Recipes</h1>
-<button type="button" class="btn btn-primary" @onclick="@(() => NavManager.NavigateTo("/RecipeEditor"))">Create new recipe</button>
+<hr>
+<button type="button" class="btn btn-primary" @onclick="@(() => NavManager.NavigateTo("/RecipeEditor"))">Create new</button>
 <br>
 <br>
 @if (AllRecipes is null)

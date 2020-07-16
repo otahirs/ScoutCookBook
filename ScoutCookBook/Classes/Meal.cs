@@ -9,7 +9,7 @@ namespace ScoutCookBook.Models
 {
     public class Meal
     {
-        public DisplayRecipeModel Recipe { get; set; } = new DisplayRecipeModel();
+        public Recipe Recipe { get; set; } = new Recipe();
         public List<Portion> Portions { get; set; } = new List<Portion>();
 
         public List<IngredientAmount> IngredientsAmount 
@@ -30,7 +30,7 @@ namespace ScoutCookBook.Models
                     {   
                         Ingredient = ingredient,  
                         TotalAmount = totalAmount,
-                        Recipes = new List<DisplayRecipeModel>() { Recipe }
+                        Recipes = new List<Recipe>() { Recipe }
                     });
                 }
                return ia;
@@ -49,7 +49,7 @@ namespace ScoutCookBook.Models
             }
             sb.AppendLine();
             sb.AppendLine("Recipe:");
-            sb.AppendLine(Recipe.Recipe);
+            sb.AppendLine(Recipe.Directions);
 
             return sb.ToString();
         }

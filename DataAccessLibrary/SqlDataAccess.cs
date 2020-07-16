@@ -36,7 +36,7 @@ namespace DataAccessLibrary
                     CREATE TABLE IF NOT EXISTS ""RECIPE"" (
                         id INTEGER PRIMARY KEY,
                         name TEXT NOT NULL,
-                        recipe TEXT NOT NULL,
+                        directions TEXT NOT NULL,
                         numberOfPortions INTEGER NOT NULL,
                         type TEXT NOT NULL
                     );

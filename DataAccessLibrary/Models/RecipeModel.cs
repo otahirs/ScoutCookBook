@@ -4,7 +4,7 @@ namespace DataAccessLibrary.Models
     {
         public int Id { get; }
         public string Name { get; set; }
-        public string Recipe { get; set; }
+        public string Directions { get; set; }
         public int NumberOfPortions { get; set; }
         public string Type { get; set; }
     }

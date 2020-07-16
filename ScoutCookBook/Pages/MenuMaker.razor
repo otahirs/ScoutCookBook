@@ -4,8 +4,7 @@
 @using DataAccessLibrary.Models
 @using SharedLibrary.Enums
 @using BlazorDateRangePicker
-@using ScoutCookBook.Pages.Menu
-
+@using ScoutCookBook.Components
 @inject NavigationManager NavManager
 @inject IToastService toastService
 @inject IModalService Modal
@@ -19,6 +18,7 @@
 else if (!StepOneFinnished)
 {
     <h1>Create Menu 1/3</h1>
+    <hr>
     <EditForm Model="StepOneForm" OnValidSubmit=SubmitStepOne>
     <ValidationSummary />
     <DataAnnotationsValidator />
@@ -77,32 +77,29 @@ else if (!StepOneFinnished)
 }
 else if (!StepSecondFinnished)
 {
-     <h1>Create Menu 2/3</h1>
+    <h1>Create Menu 2/3</h1>
+    <hr>
     @foreach (var menuDay in Menu)
     {
-        var slots = new string[] {"Breakfast", "Lunch", "Dinner"};
         <div class="row">
             <div class="col-12">
                 <h3>@menuDay.Date.DayOfWeek.ToString() @menuDay.Date.ToString("d. MMMM")</h3>
             </div>
-            @foreach(var slot in slots) 
+            @if(!menuDay.Slots.Any(s => s.Key == "Breakfast")) { <div class="col-4"></div> 
+            @if(!menuDay.Slots.Any(s => s.Key == "Lunch")) { <div class="col-4"></div> }}
+            @foreach(var (slotName, meals) in menuDay.Slots) 
             {
-                var meals = (List<Meal>)menuDay.GetType().GetProperty(slot + "Meals").GetValue(menuDay, null); @* ugly as F *@
                 <div class="col-4">
-                @if(meals != null)
-                {
-                    <b>@slot</b>
-                    foreach (var meal in meals)
+                    <b>@slotName</b>
+                    @foreach (var meal in meals)
                     {
-                        <MealEdit Meal=meal  Recipes=AllRecipes />
+                        <MenuMealEdit Meal=meal  Recipes=AllRecipes />
                     }
                     <button type="button"  @onclick=@(()=> AddMeal(meals) )>+</button>
                     <button type="button"  @onclick=@(()=> Reset(meals) )>clear</button> 
                     <br><br>
-                }
                 </div>
             }
-           
         </div>
         <hr>
     }   
@@ -112,8 +109,9 @@ else if (!StepSecondFinnished)
 } 
 else
 {
-     <h1>Create Menu 3/3</h1>
-    <DisplaySummary Menu=Menu ></DisplaySummary>
+    <h1>Create Menu 3/3</h1>
+    <hr>
+    <MenuSummary Menu=Menu />
     <br>
     <button type="button" class="btn btn-primary" @onclick=@(()=> StepSecondFinnished = false )>Back (meal selection)</button>
     <br>
@@ -121,12 +119,9 @@ else
 
 @code {
     private bool StepOneFinnished = false;
-
     private bool StepSecondFinnished = false;
-    
-    private MenuFormModel StepOneForm = new MenuFormModel();
+    private MenuStepOneFormModel StepOneForm = new MenuStepOneFormModel();
     private List<RecipeModel> AllRecipes;
-
     private List<PersonModel> People;
     private List<MenuDay> Menu = new List<MenuDay>();
     protected override async Task OnInitializedAsync()
@@ -148,17 +143,26 @@ else
             var menuDay = new MenuDay() { Date = StepOneForm.StartDate.Value.AddDays(i) };
             if(i != 0 || StepOneForm.StartMeal == "Breakfast")
             {
-               menuDay.BreakfastMeals = AddMeal(new List<Meal>());
+                menuDay.Slots.Add(new KeyValuePair<string, List<Meal>>(
+                    "Breakfast", 
+                    AddMeal(new List<Meal>())
+                ));
             }
             if( i == 0 && StepOneForm.StartMeal != "Dinner" || 
                 i == numOfDays && StepOneForm.EndMeal != "Breakfast" || 
                 i != 0 && i != numOfDays)
             {
-               menuDay.LunchMeals = AddMeal(new List<Meal>());
+                menuDay.Slots.Add(new KeyValuePair<string, List<Meal>>(
+                    "Lunch", 
+                    AddMeal(new List<Meal>())
+                ));
             }
             if(i != numOfDays || StepOneForm.EndMeal == "Dinner")
             {
-               menuDay.DinnerMeals = AddMeal(new List<Meal>());
+                menuDay.Slots.Add(new KeyValuePair<string, List<Meal>>(
+                    "Dinner", 
+                    AddMeal(new List<Meal>())
+                ));
             }
 
             Menu.Add(menuDay);

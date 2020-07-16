@@ -4,8 +4,8 @@ namespace ScoutCookBook.Models
 {
     public class IngredientAmount
     {
-        public DisplayIngredientModel Ingredient { get; set; }
+        public Ingredient Ingredient { get; set; }
         public double TotalAmount { get; set; }
-        public List<DisplayRecipeModel> Recipes { get; set; }
+        public List<Recipe> Recipes { get; set; }
     }
 }

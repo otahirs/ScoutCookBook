@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 namespace ScoutCookBook.Models
 {
-    public class MenuFormModel
+    public class MenuStepOneFormModel
     {
         public DateTimeOffset? StartDate { get; set; }
         public DateTimeOffset? EndDate { get; set; }
