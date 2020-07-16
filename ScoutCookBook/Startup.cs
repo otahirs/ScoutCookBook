@@ -30,7 +30,7 @@ namespace ScoutCookBook
             services.AddBlazoredToast();
             services.AddBlazoredModal();
             services.AddTransient<ISqlDataAccess, SqlDataAccess>();
-            services.AddTransient<IRecipeData, RecipeData>();
+            services.AddTransient<ICookBookData, CookBookData>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

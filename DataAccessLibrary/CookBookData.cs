@@ -4,11 +4,11 @@ using DataAccessLibrary.Models;
 
 namespace DataAccessLibrary
 {
-    public class RecipeData : IRecipeData
+    public class CookBookData : ICookBookData
     {
         private readonly ISqlDataAccess _db;
 
-        public RecipeData(ISqlDataAccess db)
+        public CookBookData(ISqlDataAccess db)
         {
             _db = db;
         }

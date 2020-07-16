@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace DataAccessLibrary
 {
-    public interface IRecipeData
+    public interface ICookBookData
     {
         Task<List<RecipeModel>> GetRecipes();
         Task<int> InsertRecipe(RecipeModel recipe);

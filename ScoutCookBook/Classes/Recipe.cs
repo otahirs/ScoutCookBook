@@ -12,7 +12,7 @@ namespace ScoutCookBook.Classes
     public class Recipe
     {
 
-        private readonly IRecipeData _db = new RecipeData(new SqlDataAccess());
+        private readonly ICookBookData _db = new CookBookData(new SqlDataAccess());
         public int Id { get; set; }
 
         [Required]
