@@ -1,15 +1,19 @@
 @page "/Recipes"
 
-@using SharedLibrary.Enums
 @using DataAccessLibrary
 @using DataAccessLibrary.Models
-@using ScoutCookBook.Models
 @using System
+@using System.Globalization
 
+@inject NavigationManager NavManager
+@inject IToastService toastService
+@inject IModalService Modal
 @inject IRecipeData _db
 
-<h1>Recipes Page</h1>
-
+<h1>Recipes</h1>
+<button type="button" class="btn btn-primary" @onclick="@(() => NavManager.NavigateTo("/RecipeEditor"))">Create new recipe</button>
+<br>
+<br>
 @if (AllRecipes is null)
 {
     <p><em>Loading...</em></p>
@@ -19,20 +23,20 @@ else
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Název krmě</th>
-                <th>Recept</th>
-                <th>Pečet porcí</th>
-                <th>Typ jídla</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Edit</th>
+                <th>Delete</th>
             </tr>
-        </thead>
+        </thead> 
         <tbody>
-            @foreach (var Recipe in AllRecipes)
+            @foreach (var recipe in AllRecipes)
             {
                 <tr>
-                    <td>@Recipe.Name</td>
-                    <td>@Recipe.Recipe</td>
-                    <td>@Recipe.NumberOfPortions</td>
-                    <td>@Recipe.Type</td>
+                    <td>@recipe.Name</td>
+                    <td>@recipe.Type</td>
+                    <td><a class="btn" href="/RecipeEditor/@recipe.Id"><span class="oi oi-pencil"></span></a></td>
+                    <td><button type="button" @onclick="@(() => DeleteRecipe(recipe))" class="btn"><span class="oi oi-x"></span></button></td>
                 </tr>
             }
         </tbody>
@@ -40,11 +44,30 @@ else
 }
 
 @code {
+    StringComparer comp = StringComparer.Create(CultureInfo.CreateSpecificCulture("cs-CZ"), false); //true/false - whether comparison should be case-sensitive
     private List<RecipeModel> AllRecipes;
-    private List<IngredientModel> AllIngredients;
+
     protected override async Task OnInitializedAsync()
     {
-        AllRecipes = await _db.GetRecipes();
-        AllIngredients = await _db.GetIngredients();
+        AllRecipes = (await _db.GetRecipes()).OrderBy(i => i.Name, comp).ThenBy(i => i.Id).ToList();
     }
+   
+    private async Task DeleteRecipe(RecipeModel Recipe)
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add(nameof(ConfirmModal.Message), "Recipe will be pernamentrly deleted");
+        modalParameters.Add(nameof(ConfirmModal.ConfirmButtonText), "Delete");
+        var modalOptions = new ModalOptions() { HideCloseButton = true};
+
+        var result = await Modal.Show<ConfirmModal>("Are you sure?", modalParameters, modalOptions).Result;
+
+        if (!result.Cancelled)
+        {
+            await _db.DeleteRecipe(Recipe.Id);
+            AllRecipes.Remove(Recipe);
+            toastService.ShowSuccess($"{Recipe.Name} Deleted");
+        }  
+        
+    }
+
 }

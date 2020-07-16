@@ -4,5 +4,6 @@ namespace DataAccessLibrary.Models
     {
         public int RecipeId { get; set; }
         public int Amount { get; set; }
+
     }
 }

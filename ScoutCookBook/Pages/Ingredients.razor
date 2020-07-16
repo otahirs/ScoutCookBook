@@ -48,10 +48,10 @@ else
     </label><br>
 
     <button type="submit" class="btn btn-primary">Save</button>
+    <button type="button" class="btn btn-secondary" @onclick="@(() => {EditMode = false; newIngredient= new DisplayIngredientModel();})">Cancel</button>
 </EditForm>
 
-<hr>
-<h3>List of all ingredients</h3>
+<br>
 @if (AllIngredients is null)
 {
     <p><em>Loading...</em></p>
@@ -140,7 +140,7 @@ else
         try {
             await _db.DeleteIngredient(ingredient);
             AllIngredients.Remove(ingredient);
-            toastService.ShowInfo($"{ingredient.Name} Deleted");
+            toastService.ShowSuccess($"{ingredient.Name} Deleted");
         }
         catch {
             toastService.ShowError("Something went wrong");

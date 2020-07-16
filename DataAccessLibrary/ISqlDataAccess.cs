@@ -6,7 +6,6 @@ namespace DataAccessLibrary
     public interface ISqlDataAccess
     {
         Task<List<T>> LoadData<T, U>(string sql, U parameters);
-        Task SaveData<T>(string sql, T parameters);
-        Task<int> GetId<T>(string sql, T parameters);
+        Task<int> SaveData<T>(string sql, T parameters);
     }
 }

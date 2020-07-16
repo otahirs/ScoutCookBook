@@ -5,6 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BlazorDateRangePicker" Version="2.6.0" />
+    <PackageReference Include="Blazored.Modal" Version="4.1.0" />
+    <PackageReference Include="Radzen.Blazor" Version="2.10.11" />
     <ProjectReference Include="..\DataAccessLibrary\DataAccessLibrary.csproj" />
     <ProjectReference Include="..\SharedLibrary\SharedLibrary.csproj" />
     <PackageReference Include="Blazored.Toast" Version="3.1.2" />

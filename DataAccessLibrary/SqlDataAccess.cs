@@ -61,6 +61,12 @@ namespace DataAccessLibrary
                             REFERENCES ingredient (id) 
                                 ON DELETE RESTRICT 
                                 ON UPDATE NO ACTION
+                    );
+                    
+                    CREATE TABLE IF NOT EXISTS ""PERSON"" (
+                        id INTEGER PRIMARY KEY,
+                        name TEXT NOT NULL,
+                        coefficient REAL NOT NULL
                     );";
                 connection.Execute(sql);
             }
@@ -77,22 +83,22 @@ namespace DataAccessLibrary
             }
         }
 
-        public async Task SaveData<T>(string sql, T parameters)
+        public async Task<int> SaveData<T>(string sql, T parameters)
         {
 
-            using (IDbConnection connection = new SQLiteConnection(connectionString))
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
-                await connection.ExecuteAsync(sql, parameters);
+                SQLiteTransaction transaction = null;
+                connection.Open();
+
+                transaction = connection.BeginTransaction();
+                    await connection.ExecuteAsync(sql, parameters);
+                    var rowID = (int)connection.LastInsertRowId;
+                transaction.Commit();
+
+                return rowID;
             }
         }
 
-        public async Task<int> GetId<T>(string sql, T parameters)
-        {
-            using (IDbConnection connection = new SQLiteConnection(connectionString))
-            {
-                return await connection.ExecuteAsync(sql, parameters);
-            }
-        }
-        
     }
 }

@@ -12,9 +12,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ScoutCookBook</title>
     <base href="~/" />
+    <link href="_content/Blazored.Toast/blazored-toast.css" rel="stylesheet" />
+    <link href="_content/Blazored.Modal/blazored-modal.css" rel="stylesheet" />
+    <script src="_content/BlazorDateRangePicker/clickAndPositionHandler.js"></script>
+    <link rel="stylesheet" href="_content/BlazorDateRangePicker/daterangepicker.min.css" />
+    <link rel="stylesheet" href="_content/Radzen.Blazor/css/default.css">
+    <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
+    
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link href="css/site.css" rel="stylesheet" />
-    <link href="_content/Blazored.Toast/blazored-toast.css" rel="stylesheet" />
+    
+    <script type="text/javascript">
+        function saveAsFile(filename, bytesBase64) {
+            var link = document.createElement('a');
+            link.download = filename;
+            link.href = "data:application/octet-stream;base64," + bytesBase64;
+            document.body.appendChild(link); // Needed for Firefox
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
 </head>
 <body>
     <app>

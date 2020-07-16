@@ -1,0 +1,17 @@
+<div>
+    <p>@Message</p>
+    <br>
+    <button @onclick="Close" class="btn btn-danger">@ConfirmButtonText</button>
+    <button @onclick="Cancel" class="btn btn-secondary">Cancel</button>
+</div>
+
+@code {
+
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+    [Parameter] public string Message { get; set; }
+    [Parameter] public string ConfirmButtonText { get; set; }
+
+    void Close() => BlazoredModal.Close(ModalResult.Ok(true));
+    void Cancel() => BlazoredModal.Cancel();
+
+}

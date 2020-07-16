@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using SharedLibrary.Enums;
 using System;
+using DataAccessLibrary.Models;
 
 namespace ScoutCookBook.Models
 {
@@ -12,9 +13,68 @@ namespace ScoutCookBook.Models
         [Required]
         public IngredientCategory Category { get; set; } = Enum.Parse<IngredientCategory>("Other");
         [Required]
-        public IngredientUnit Unit { get; set; } = Enum.Parse<IngredientUnit>("Piece");
+        public IngredientUnit Unit { get; set; } = Enum.Parse<IngredientUnit>("Gram");
 
-        public string Amount { get; set; }
+        [Range(0, int.MaxValue, ErrorMessage = "Please enter valid integer Number")]
+        public int Amount { get; set; }
 
+        public IngredientModel GetIngredientModel()
+        {
+            return new IngredientModel 
+            {
+                Id = this.Id,
+                Name = this.Name,
+                Category = Enum.GetName(typeof(IngredientCategory), this.Category),
+                Unit = Enum.GetName(typeof(IngredientUnit), this.Unit)
+            };
+        }
+
+        public IngredientInRecipeModel GetIngredientInRecipeModel(int RecipeId)
+        {
+            return new IngredientInRecipeModel
+            {
+                Id = this.Id,
+                RecipeId = RecipeId,
+                Name = this.Name,
+                Category = Enum.GetName(typeof(IngredientCategory), this.Category),
+                Unit = Enum.GetName(typeof(IngredientUnit), this.Unit),
+                Amount = this.Amount,
+
+            };
+        }
+
+        public string UnitAmountFormated(double Amount, IngredientUnit Unit) 
+        {
+            switch (Unit)
+            {
+                case IngredientUnit.Gram:
+                    if (Amount < 1000)
+                    {
+                        return $"{Math.Round(Amount, 1)} g";
+                    }
+                    else 
+                    {
+                        return $"{Math.Round(Amount / 1000, 1)} kg";
+                    }
+                case IngredientUnit.Mililiter:
+                    if (Amount < 1000)
+                    {
+                        return $"{Math.Round(Amount, 1)} ml";
+                    }
+                    else 
+                    {
+                        return $"{Math.Round(Amount / 1000, 1)} l";
+                    }
+                case IngredientUnit.Piece:
+                    return $"{Math.Round(Amount, 1)} pcs";
+                default:
+                    return "unknown unit";
+            }
+        }
+
+        public string UnitAmountFormated()
+        {
+            return UnitAmountFormated((double)Amount, Unit); 
+        }
     }
 }

@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using DataAccessLibrary;
 using Blazored.Toast;
+using Blazored.Modal;
+using Microsoft.JSInterop;
 
 namespace ScoutCookBook
 {
@@ -30,6 +32,7 @@ namespace ScoutCookBook
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddBlazoredToast();
+            services.AddBlazoredModal();
             services.AddTransient<ISqlDataAccess, SqlDataAccess>();
             services.AddTransient<IRecipeData, RecipeData>();
         }
@@ -59,5 +62,15 @@ namespace ScoutCookBook
                 endpoints.MapFallbackToPage("/_Host");
             });
         }
+    }
+    public static class FileUtil
+    {
+        public async static Task SaveAs(IJSRuntime js, string filename, byte[] data)
+        {
+            await js.InvokeAsync<object>(
+                "saveAsFile",
+                filename,
+                Convert.ToBase64String(data));
+        }            
     }
 }

@@ -1,0 +1,170 @@
+@using ScoutCookBook.Models
+@using SharedLibrary.Enums
+@using System.Linq
+@inject IJSRuntime js
+
+<div class="row">
+<div class="col-8">
+    <div class="card">
+    <div class="card-body">
+    <h3 class="card-title">Menu</h3>
+    @foreach(var menuDay in Menu) {
+        <h5>@menuDay.Date.DayOfWeek.ToString() @menuDay.Date.ToString("d. MMMM")</h5>
+        var slots = new string[] {"Breakfast", "Lunch", "Dinner"};
+        @foreach(var slot in slots) {
+            var meals = (List<Meal>)menuDay.GetType().GetProperty(slot + "Meals").GetValue(menuDay, null); @* ugly as F *@
+            <div class="row">
+            @if(meals != null)
+            {
+                <div class="col-2">
+                    <b>@slot</b>
+                </div>
+                <div class="col">
+                @foreach (var meal in meals)
+                {
+                    
+                    @meal.Recipe.Name<br>
+                
+                }
+                </div>
+            }
+            </div>
+        }
+        <br>
+    }
+    <button @onclick=DownloadMenu>Download</button>
+    </div>
+    </div>
+</div>
+<div class="col">
+@if(Menu != null)
+{
+    <div class="card">
+    <div class="card-body">
+        <h3 class="card-title">Shopping List</h3>
+        <p class="card-text">  
+        @foreach(var cathegory in ShoppingList)
+        {
+            @cathegory.Key.ToString()
+            <ul>
+                @foreach (var ia in cathegory.Value)
+                {
+                    var last = ia.Recipes.Last();
+                    <li>@ia.Ingredient.Name: @ia.Ingredient.UnitAmountFormated(ia.TotalAmount, ia.Ingredient.Unit) 
+                        <em>(
+                        @foreach (var recipe in ia.Recipes)
+                        {
+                            @recipe.Name
+                            if(recipe != last) @(", ")
+                        }
+                        )</em>
+                    </li>
+                }
+            </ul>
+        }
+        </p>
+        <button @onclick=DownloadShoppingList>Download</button>
+    </div>
+    </div>
+
+    <br>
+    <div class="card">
+    <div class="card-body">
+        <h3 class="card-title">Recipes</h3>
+        <button @onclick=DownloadRecipes>Download</button>
+    </div>
+    </div>
+}
+</div>
+</div>
+
+
+
+@code {
+    [Parameter]
+    public List<MenuDay> Menu { get; set; }
+
+    private Dictionary<IngredientCategory, List<IngredientAmount>> ShoppingList
+    {
+        get 
+        {
+            return this.Menu
+                .SelectMany(md => md.IngredientsAmount)
+                .ToLookup(ia => ia.Ingredient.Id)
+                .Select(ia => ia.Aggregate((ia1, ia2) => new IngredientAmount
+                {
+                    Ingredient = ia1.Ingredient,
+                    TotalAmount = ia1.TotalAmount + ia2.TotalAmount,
+                    Recipes = ia1.Recipes.Concat(ia2.Recipes).ToList()
+                }))
+                .GroupBy(ia => ia.Ingredient.Category)
+                .ToDictionary(g => g.Key, g => g.ToList());
+        }
+    }
+
+    private async Task DownloadShoppingList() {
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine("Shopping list");
+        foreach(var cathegory in ShoppingList)
+        {
+            sb.AppendLine(cathegory.Key.ToString());
+            foreach (var ia in cathegory.Value)
+            {
+                var last = ia.Recipes.Last();
+                sb.Append($" - {ia.Ingredient.Name}: {ia.Ingredient.UnitAmountFormated(ia.TotalAmount, ia.Ingredient.Unit) } (");
+                foreach (var recipe in ia.Recipes)
+                {
+                    sb.Append(recipe.Name);
+                    if(recipe != last) sb.Append(", ");
+                }
+                sb.AppendLine(")");
+            }
+        }
+        var text = sb.ToString();
+        var fileName = "ShoppingList.txt";
+        var bytes = System.Text.Encoding.UTF8.GetBytes(text);
+        await FileUtil.SaveAs(js, fileName, bytes);
+    }
+
+    private async Task DownloadMenu() {
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine("Menu");
+
+        foreach(var menuDay in this.Menu) 
+        {
+            sb.AppendLine("-------------------------");
+            sb.AppendLine();
+            sb.AppendLine(menuDay.ToString());
+        }
+        var text = sb.ToString();
+        var fileName = "Menu.txt";
+        var bytes = System.Text.Encoding.UTF8.GetBytes(text);
+        await FileUtil.SaveAs(js, fileName, bytes);
+    }
+
+    private async Task DownloadRecipes() {
+        var sb = new System.Text.StringBuilder();
+
+        foreach(var menuDay in this.Menu) {
+        var slots = new string[] {"Breakfast", "Lunch", "Dinner"};
+            foreach(var slot in slots) {
+                var meals = (List<Meal>)menuDay.GetType().GetProperty(slot + "Meals").GetValue(menuDay, null); // ugly as F 
+                if(meals != null)
+                {
+                    foreach (var meal in meals)
+                    {
+                        sb.AppendLine("-------------------------");
+                        sb.AppendLine();
+                        sb.AppendLine(meal.ToString());
+                    
+                    }
+                }
+            }
+        }
+
+        var text = sb.ToString();
+        var fileName = "Recipes.txt";
+        var bytes = System.Text.Encoding.UTF8.GetBytes(text);
+        await FileUtil.SaveAs(js, fileName, bytes);
+    }
+}

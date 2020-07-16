@@ -1,0 +1,84 @@
+
+@using Models
+@using DataAccessLibrary.Models
+
+<div class="row">
+    <div class="col-12">
+
+        <RadzenDropDown 
+            @bind-Value="Meal.Recipe.Id"
+            Data="@Recipes" 
+            TextProperty="Name" 
+            ValueProperty="Id" 
+            Change="RecipeSelected" 
+            TValue="int" 
+            AllowFiltering="true" 
+            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
+            Placeholder="Select..." 
+            FilterDelay="100"
+        />
+        @*
+        <select @onchange="RecipeSelected">
+            <option hidden disabled>-- Select --</option>
+            @foreach (var recipe in Recipes)
+            {
+                <option value="@recipe.Id" selected="@(recipe.Id == Meal.Recipe?.Id)">@recipe.Name</option>
+            }
+        </select> *@
+        @if (Meal.Recipe.Id != 0) 
+        {
+            <RadzenButton Click="@(() => ShowDetails = !ShowDetails)" Text="details" ButtonStyle=ButtonStyle.Light Style="top: -12px;position: relative;"/>
+        }
+    </div>
+    @if(ShowDetails)
+    {
+        <div class="col-12 card">
+        <div class="card-body">
+            <h3 class="card-title">@Meal.Recipe?.Name</h3>
+            <h6 class="card-subtitle mb-2">@Meal.Recipe?.Type</h6>
+            <h6 class="card-subtitle mb-2 text-muted">Ingredients</h6>
+            <p class="card-text">
+            <ul>
+            @foreach(var ia in Meal.IngredientsAmount)
+            {
+                <li>@ia.Ingredient.Name: @ia.Ingredient.UnitAmountFormated(ia.TotalAmount, ia.Ingredient.Unit)</li>
+            }
+            </ul>
+            </p>
+        
+        <h6 class="card-subtitle mb-2 text-muted">Portions</h6>
+        <EditForm Model=Meal class="col-12 row">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+        @foreach(var portion in Meal.Portions)
+        {                      
+            <div class="input-group mb-2">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" style="min-width: 7em;">@portion.Person.Name</span>
+                </div>
+            <InputNumber class="form-control" @bind-Value="@portion.Count"  />
+            </div>
+        }
+        </EditForm>
+        </div>
+        </div>
+        <div class="col-12"><br></div>
+    }
+    
+</div>
+
+
+@code {
+    [Parameter]
+    public Meal Meal { get; set; }
+
+    [Parameter]
+    public List<RecipeModel> Recipes { get; set; }
+
+    private bool ShowDetails = false;
+
+    private async Task RecipeSelected(object id)
+    {
+        await Meal.Recipe.LoadAsync((int)id);
+    }
+}

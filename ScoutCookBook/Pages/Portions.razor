@@ -1,0 +1,131 @@
+@page "/People"
+
+@using SharedLibrary.Enums
+@using DataAccessLibrary
+@using DataAccessLibrary.Models
+@using ScoutCookBook.Models
+@using System
+@using System.Globalization
+
+@inject IToastService toastService
+@inject IRecipeData _db
+
+<h1>People</h1>
+<hr>
+@if(EditMode)
+{
+    <h3>Edit person</h3>
+}
+else 
+{
+    <h3>Create new person</h3>
+}
+<EditForm Model="@PersonForm" OnValidSubmit="@SavePerson">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <label>
+        Name:
+        <InputText @bind-Value="PersonForm.Name" />
+    </label><br>
+    <label>
+        Portion Coefficient:
+        <InputNumber TValue=double @bind-Value=PersonForm.Coefficient ParsingErrorMessage="Coefficient must be a valid floating point numnber."/>
+    </label><br>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="button" class="btn btn-secondary" @onclick="@(() => {EditMode = false; PersonForm= new PersonModel();})">Cancel</button>
+</EditForm>
+
+<br>
+@if (People is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Portion Coefficient</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var Person in People)
+            {
+                <tr>
+                    <td>@Person.Name</td>
+                    <td>@Person.Coefficient</td>
+                    <td><button type="button" @onclick="@(() => EditPerson(Person))" class="btn"><span class="oi oi-pencil"></span></button></td>
+                    <td><button type="button" @onclick="@(() => DeletePerson(Person))" class="btn"><span class="oi oi-x"></span></button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private bool EditMode = false;
+    private List<PersonModel> People;
+
+    private PersonModel PersonForm = new PersonModel();
+    protected override async Task OnInitializedAsync()
+    {
+        People = await _db.GetPeople();
+        People.Sort((p1, p2) => p1.Coefficient.CompareTo(p2.Coefficient));
+    }
+    private async Task SavePerson()
+    {
+        try {
+            PersonModel Person = new PersonModel
+            {
+                Id = PersonForm.Id,
+                Name = PersonForm.Name,
+                Coefficient = PersonForm.Coefficient
+            };
+            if (!EditMode)
+            {
+                await _db.InsertPerson(Person);
+                toastService.ShowSuccess($"{Person.Name} Added");
+            }
+            else {
+                await _db.UpdatePerson(Person);
+                toastService.ShowSuccess($"{Person.Name} Updated");
+                EditMode = false;
+            }
+            People = await _db.GetPeople();
+            People.Sort((p1, p2) => p1.Coefficient.CompareTo(p2.Coefficient));
+            PersonForm = new PersonModel();    
+        }
+        catch {
+            toastService.ShowError("Something went wrong");
+        }
+    }
+
+    private void EditPerson(PersonModel Person)
+    {
+        EditMode = true;
+        PersonForm = new PersonModel
+        {
+            Id = Person.Id,
+            Name = Person.Name,
+            Coefficient = Person.Coefficient
+        };
+    }
+
+    private async Task DeletePerson(PersonModel Person)
+    {
+        try {
+            await _db.DeletePerson(Person);
+            People.Remove(Person);
+            toastService.ShowSuccess($"{Person.Name} Deleted");
+        }
+        catch {
+            toastService.ShowError("Something went wrong");
+        }
+    }
+
+}
