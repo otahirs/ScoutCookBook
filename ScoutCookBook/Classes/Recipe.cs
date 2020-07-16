@@ -12,7 +12,7 @@ namespace ScoutCookBook.Classes
     public class Recipe
     {
 
-        private IRecipeData _db = new RecipeData(new SqlDataAccess());
+        private readonly IRecipeData _db = new RecipeData(new SqlDataAccess());
         public int Id { get; set; }
 
         [Required]
@@ -75,7 +75,7 @@ namespace ScoutCookBook.Classes
                     Amount = i.Amount
                 };
                 Ingredients.Add(ingredient);
-            };   
+            }
         }
     }
 }

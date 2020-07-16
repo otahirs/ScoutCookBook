@@ -2,7 +2,6 @@
 
 @using DataAccessLibrary
 @using DataAccessLibrary.Models
-@using System
 @using System.Globalization
 
 @inject NavigationManager NavManager
@@ -53,7 +52,7 @@ else
         AllRecipes = (await _db.GetRecipes()).OrderBy(i => i.Name, comp).ThenBy(i => i.Id).ToList();
     }
    
-    private async Task DeleteRecipe(RecipeModel Recipe)
+    private async Task DeleteRecipe(RecipeModel recipe)
     {
         var modalParameters = new ModalParameters();
         modalParameters.Add(nameof(ConfirmModal.Message), "Recipe will be permanently deleted");
@@ -64,9 +63,9 @@ else
 
         if (!result.Cancelled)
         {
-            await _db.DeleteRecipe(Recipe.Id);
-            AllRecipes.Remove(Recipe);
-            ToastService.ShowSuccess($"{Recipe.Name} Deleted");
+            await _db.DeleteRecipe(recipe.Id);
+            AllRecipes.Remove(recipe);
+            ToastService.ShowSuccess($"{recipe.Name} Deleted");
         }  
         
     }

@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using DataAccessLibrary.Models;
 
@@ -29,7 +27,7 @@ namespace DataAccessLibrary
             return _db.LoadData<IngredientModel, dynamic>(sql, new { });
         }
 
-        public Task<List<IngredientInRecipeModel>> GetIngredientsInRecipe(int RecipeId)
+        public Task<List<IngredientInRecipeModel>> GetIngredientsInRecipe(int recipeId)
         {
             const string sql = @"SELECT ingredient.Id, recipe.Id as RecipeId, ingredient.Name, ingredient.Category, ingredient.Unit, recipe_ingredient.Amount FROM ingredient
                             INNER JOIN recipe_ingredient
@@ -38,7 +36,7 @@ namespace DataAccessLibrary
                                 ON recipe_ingredient.recipe_id = recipe.id
                             WHERE recipe.id = @Id";
 
-            return _db.LoadData<IngredientInRecipeModel, dynamic>(sql, new { Id = RecipeId });
+            return _db.LoadData<IngredientInRecipeModel, dynamic>(sql, new { Id = recipeId });
         }
 
         public Task<List<PersonModel>> GetPeople()

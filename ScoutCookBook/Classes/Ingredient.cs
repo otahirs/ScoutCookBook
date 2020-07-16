@@ -29,30 +29,30 @@ namespace ScoutCookBook.Classes
             };
         }
 
-        public static string UnitAmountFormated(double Amount, IngredientUnit Unit) 
+        public static string UnitAmountFormated(double amount, IngredientUnit unit) 
         {
-            switch (Unit)
+            switch (unit)
             {
                 case IngredientUnit.Gram:
-                    if (Amount < 1000)
+                    if (amount < 1000)
                     {
-                        return $"{Math.Round(Amount, 1)} g";
+                        return $"{Math.Round(amount, 1)} g";
                     }
                     else 
                     {
-                        return $"{Math.Round(Amount / 1000, 1)} kg";
+                        return $"{Math.Round(amount / 1000, 1)} kg";
                     }
                 case IngredientUnit.Mililiter:
-                    if (Amount < 1000)
+                    if (amount < 1000)
                     {
-                        return $"{Math.Round(Amount, 1)} ml";
+                        return $"{Math.Round(amount, 1)} ml";
                     }
                     else 
                     {
-                        return $"{Math.Round(Amount / 1000, 1)} l";
+                        return $"{Math.Round(amount / 1000, 1)} l";
                     }
                 case IngredientUnit.Piece:
-                    return $"{Math.Round(Amount, 1)} pcs";
+                    return $"{Math.Round(amount, 1)} pcs";
                 default:
                     return "unknown unit";
             }

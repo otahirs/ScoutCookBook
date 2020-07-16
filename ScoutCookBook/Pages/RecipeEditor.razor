@@ -4,11 +4,10 @@
 @using SharedLibrary.Enums
 @using DataAccessLibrary
 @using DataAccessLibrary.Models
-@using System
 @using ScoutCookBook.Classes
 
 @inject NavigationManager NavManager
-@inject IToastService toastService
+@inject IToastService ToastService
 @inject IRecipeData _db
 
 @if (Recipe is null)
@@ -175,7 +174,7 @@ else
             };
             await _db.InsertIngredientInRecipe(ingToDb);
         }
-        toastService.ShowSuccess($"Recipe {(RecipeId == null ? "created" : "updated")}");
+        ToastService.ShowSuccess($"Recipe {(RecipeId == null ? "created" : "updated")}");
         if (RecipeId == null) NavManager.NavigateTo($"/RecipeEditor/{Recipe.Id}");
     }
 
@@ -196,7 +195,7 @@ else
             newIngredient = new Ingredient(); 
             CreateIngredientIsActive = false;   
 
-            toastService.ShowSuccess($"{ingredientToDb.Name} Added");
+            ToastService.ShowSuccess($"{ingredientToDb.Name} Added");
     }
 
     private void IngredientUpdated(object id, Ingredient ingredient)

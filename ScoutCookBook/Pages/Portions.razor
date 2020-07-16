@@ -1,10 +1,6 @@
 @page "/People"
-
-@using SharedLibrary.Enums
 @using DataAccessLibrary
 @using DataAccessLibrary.Models
-@using System
-@using System.Globalization
 
 @inject IToastService ToastService
 @inject IRecipeData _db
@@ -104,14 +100,14 @@ else
         }
     }
 
-    private void EditPerson(PersonModel Person)
+    private void EditPerson(PersonModel person)
     {
         EditMode = true;
         PersonForm = new PersonModel
         {
-            Id = Person.Id,
-            Name = Person.Name,
-            Coefficient = Person.Coefficient
+            Id = person.Id,
+            Name = person.Name,
+            Coefficient = person.Coefficient
         };
     }
 
