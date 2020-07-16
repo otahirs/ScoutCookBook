@@ -71,7 +71,6 @@ else if (!StepOneFinnished)
     </div> <!-- row -->
     <hr>
     <button type="submit" class="btn btn-primary">Next</button>
-    <br>
     </EditForm>
 }
 else if (!StepSecondFinnished)
@@ -104,7 +103,6 @@ else if (!StepSecondFinnished)
     }   
     <button type="button" class="btn btn-danger" @onclick=BackToStepOne >Back (date selection)</button>
     <button type="button" class="btn btn-primary" @onclick=@(()=> StepSecondFinnished = true )>Next (summary)</button>
-    <br> 
 } 
 else
 {
@@ -113,8 +111,8 @@ else
     <MenuSummary Menu=Menu />
     <br>
     <button type="button" class="btn btn-primary" @onclick=@(()=> StepSecondFinnished = false )>Back (meal selection)</button>
-    <br>
 }
+<br><br><br>
 
 @code {
     private bool StepOneFinnished = false;
