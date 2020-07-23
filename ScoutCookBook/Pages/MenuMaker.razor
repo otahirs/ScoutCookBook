@@ -26,7 +26,7 @@ else if (!StepOneFinnished)
     <div class="col-6">
     
     <label>Choose date range
-    <DateRangePicker @bind-StartDate="StepOneForm.StartDate" @bind-EndDate="StepOneForm.EndDate" Inline="true" AutoApply="true" ShowOnlyOneCalendar="true" >
+    <DateRangePicker @bind-StartDate="StepOneForm.StartDate" @bind-EndDate="StepOneForm.EndDate" Inline="true" AutoApply="true" ShowOnlyOneCalendar="true" FirstDayOfWeek="DayOfWeek.Monday" >
         <PickerTemplate Context="DP">
         @* Empty input template *@
         </PickerTemplate>
